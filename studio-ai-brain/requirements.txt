@@ -1,0 +1,7 @@
+# Python 3.10+
+python-dotenv>=1.0.1,<2
+fastapi>=0.115.6,<1
+uvicorn>=0.32.1,<1
+pydantic>=2.10.0,<3
+pypdf>=5.4.0,<7
+cryptography>=43,<50

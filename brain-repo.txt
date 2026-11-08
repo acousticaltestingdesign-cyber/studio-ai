@@ -1,0 +1,1531 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+studio-ai-brain/
+  config/
+    devices.json
+  manuals/
+    .gitkeep
+  brain_service.py
+  requirements.txt
+.repomixignore
+Studio ai handover.txt
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="studio-ai-brain/config/devices.json">
+{
+  "schema_version": "1.0.0",
+  "map_id": "studio-ai-baseline",
+  "channel_numbering": "display_1_to_16",
+  "description": "Baseline multi-device MIDI map for studio-ai-brain. Channels are the numbers printed on the instruments (1-16), not the zero-based status nibble. Each device is planned onto its own port, so controller numbers may repeat across devices. PDF manuals belong in manuals/ and are not read by this service.",
+  "devices": {
+    "cubase_daw": {
+      "display_name": "Cubase",
+      "manufacturer": "Steinberg",
+      "model": "Cubase",
+      "category": "daw",
+      "enabled": true,
+      "aliases": ["cubase", "steinberg cubase", "daw"],
+      "connection": {
+        "protocol": "midi",
+        "port_hint": "Cubase",
+        "default_channel": 1
+      },
+      "notes": "Enable MIDI Machine Control in Cubase under Transport > Project Synchronization Setup. Command bytes follow the MMC specification. mmc_device_id 127 is the all-call address. MMC does not use the connection channel.",
+      "control_groups": {
+        "transport": {
+          "description": "Transport commands. Each command has its own aliases, so one transport word does not fire the others.",
+          "fan_out": false,
+          "controls": {
+            "play": {
+              "label": "Play",
+              "aliases": ["play", "playback", "start playback"],
+              "binding_authority": "mmc_specification",
+              "hardware_target": "MMC Play",
+              "message": {
+                "type": "mmc",
+                "mmc_device_id": 127,
+                "command": "play",
+                "command_byte": 2
+              }
+            },
+            "stop": {
+              "label": "Stop",
+              "aliases": ["stop", "halt"],
+              "binding_authority": "mmc_specification",
+              "hardware_target": "MMC Stop",
+              "message": {
+                "type": "mmc",
+                "mmc_device_id": 127,
+                "command": "stop",
+                "command_byte": 1
+              }
+            },
+            "record": {
+              "label": "Record",
+              "aliases": ["record", "recording", "rec"],
+              "binding_authority": "mmc_specification",
+              "hardware_target": "MMC Record Strobe",
+              "message": {
+                "type": "mmc",
+                "mmc_device_id": 127,
+                "command": "record_strobe",
+                "command_byte": 6
+              }
+            },
+            "rewind": {
+              "label": "Rewind",
+              "aliases": ["rewind"],
+              "binding_authority": "mmc_specification",
+              "hardware_target": "MMC Rewind",
+              "message": {
+                "type": "mmc",
+                "mmc_device_id": 127,
+                "command": "rewind",
+                "command_byte": 5
+              }
+            },
+            "fast_forward": {
+              "label": "Fast Forward",
+              "aliases": ["fast forward", "fast-forward", "fastforward", "ffwd"],
+              "binding_authority": "mmc_specification",
+              "hardware_target": "MMC Fast Forward",
+              "message": {
+                "type": "mmc",
+                "mmc_device_id": 127,
+                "command": "fast_forward",
+                "command_byte": 4
+              }
+            },
+            "pause": {
+              "label": "Pause",
+              "aliases": ["pause"],
+              "binding_authority": "mmc_specification",
+              "hardware_target": "MMC Pause",
+              "message": {
+                "type": "mmc",
+                "mmc_device_id": 127,
+                "command": "pause",
+                "command_byte": 9
+              }
+            }
+          }
+        }
+      }
+    },
+    "waldorf_blofeld": {
+      "display_name": "Waldorf Blofeld",
+      "manufacturer": "Waldorf",
+      "model": "Blofeld",
+      "category": "synthesizer",
+      "enabled": true,
+      "aliases": ["blofeld", "waldorf", "waldorf blofeld"],
+      "connection": {
+        "protocol": "midi",
+        "port_hint": "Waldorf Blofeld",
+        "default_channel": 1
+      },
+      "notes": "Sound-parameter controllers on channel 1 (part 1). Filter 1 cutoff is CC 69, Filter 1 resonance is CC 70, Filter 2 cutoff is CC 80, and Filter 2 resonance is CC 81.",
+      "control_groups": {
+        "filter": {
+          "description": "Filter 1 is the default match for cutoff and resonance. Filter 2 is separate so a filter 2 request is not sent to Filter 1.",
+          "fan_out": false,
+          "controls": {
+            "filter_cutoff": {
+              "label": "Filter 1 Cutoff",
+              "aliases": ["filter cutoff", "cutoff", "filter 1 cutoff", "filter1 cutoff"],
+              "binding_authority": "manufacturer_documented",
+              "hardware_target": "Filter 1 Cutoff",
+              "message": {
+                "type": "control_change",
+                "channel": 1,
+                "controller": 69,
+                "mode": "absolute",
+                "minimum": 0,
+                "maximum": 127
+              }
+            },
+            "resonance": {
+              "label": "Filter 1 Resonance",
+              "aliases": ["resonance", "filter resonance", "filter 1 resonance", "filter1 resonance"],
+              "binding_authority": "manufacturer_documented",
+              "hardware_target": "Filter 1 Resonance",
+              "message": {
+                "type": "control_change",
+                "channel": 1,
+                "controller": 70,
+                "mode": "absolute",
+                "minimum": 0,
+                "maximum": 127
+              }
+            },
+            "filter_2_cutoff": {
+              "label": "Filter 2 Cutoff",
+              "aliases": ["filter 2 cutoff", "filter2 cutoff"],
+              "binding_authority": "manufacturer_documented",
+              "hardware_target": "Filter 2 Cutoff",
+              "message": {
+                "type": "control_change",
+                "channel": 1,
+                "controller": 80,
+                "mode": "absolute",
+                "minimum": 0,
+                "maximum": 127
+              }
+            },
+            "filter_2_resonance": {
+              "label": "Filter 2 Resonance",
+              "aliases": ["filter 2 resonance", "filter2 resonance"],
+              "binding_authority": "manufacturer_documented",
+              "hardware_target": "Filter 2 Resonance",
+              "message": {
+                "type": "control_change",
+                "channel": 1,
+                "controller": 81,
+                "mode": "absolute",
+                "minimum": 0,
+                "maximum": 127
+              }
+            }
+          }
+        }
+      }
+    },
+    "boss_rc505_mk2": {
+      "display_name": "Boss RC-505mk2",
+      "manufacturer": "Boss",
+      "model": "RC-505mk2",
+      "category": "looper",
+      "enabled": true,
+      "aliases": ["rc-505", "rc505", "rc-505mk2", "rc-505 mk2", "rc505mk2", "boss rc-505", "looper"],
+      "connection": {
+        "protocol": "midi",
+        "port_hint": "RC-505mk2",
+        "default_channel": 1
+      },
+      "notes": "The RC-505mk2 has no fixed track controllers. Program MENU > ASSIGN for each memory, then write the memory. Legal MIDI sources are CC 1-31 and CC 64-95. Set SOURCE to the controller in this map, SOURCE MODE to MOMENT, and TARGET to hardware_target. Set the receive channel to 1. Value 127 is the momentary press.",
+      "control_groups": {
+        "track_triggers": {
+          "description": "Momentary play/stop for the five phrase tracks, plus all-start/stop. Controllers 80-85 are in the assignable CC 64-95 range and avoid the GM performance controllers.",
+          "fan_out": false,
+          "controls": {
+            "track_1": {
+              "label": "Track 1 Play/Stop",
+              "aliases": ["track 1", "track1", "trk 1", "trk1", "loop 1", "track one", "loop one", "play track 1", "trigger track 1"],
+              "binding_authority": "project_baseline",
+              "hardware_target": "TRK1 PLAY/STOP1",
+              "message": {
+                "type": "control_change",
+                "channel": 1,
+                "controller": 80,
+                "mode": "momentary",
+                "minimum": 0,
+                "maximum": 127,
+                "trigger_value": 127
+              }
+            },
+            "track_2": {
+              "label": "Track 2 Play/Stop",
+              "aliases": ["track 2", "track2", "trk 2", "trk2", "loop 2", "track two", "loop two", "play track 2", "trigger track 2"],
+              "binding_authority": "project_baseline",
+              "hardware_target": "TRK2 PLAY/STOP1",
+              "message": {
+                "type": "control_change",
+                "channel": 1,
+                "controller": 81,
+                "mode": "momentary",
+                "minimum": 0,
+                "maximum": 127,
+                "trigger_value": 127
+              }
+            },
+            "track_3": {
+              "label": "Track 3 Play/Stop",
+              "aliases": ["track 3", "track3", "trk 3", "trk3", "loop 3", "track three", "loop three", "play track 3", "trigger track 3"],
+              "binding_authority": "project_baseline",
+              "hardware_target": "TRK3 PLAY/STOP1",
+              "message": {
+                "type": "control_change",
+                "channel": 1,
+                "controller": 82,
+                "mode": "momentary",
+                "minimum": 0,
+                "maximum": 127,
+                "trigger_value": 127
+              }
+            },
+            "track_4": {
+              "label": "Track 4 Play/Stop",
+              "aliases": ["track 4", "track4", "trk 4", "trk4", "loop 4", "track four", "loop four", "play track 4", "trigger track 4"],
+              "binding_authority": "project_baseline",
+              "hardware_target": "TRK4 PLAY/STOP1",
+              "message": {
+                "type": "control_change",
+                "channel": 1,
+                "controller": 83,
+                "mode": "momentary",
+                "minimum": 0,
+                "maximum": 127,
+                "trigger_value": 127
+              }
+            },
+            "track_5": {
+              "label": "Track 5 Play/Stop",
+              "aliases": ["track 5", "track5", "trk 5", "trk5", "loop 5", "track five", "loop five", "play track 5", "trigger track 5"],
+              "binding_authority": "project_baseline",
+              "hardware_target": "TRK5 PLAY/STOP1",
+              "message": {
+                "type": "control_change",
+                "channel": 1,
+                "controller": 84,
+                "mode": "momentary",
+                "minimum": 0,
+                "maximum": 127,
+                "trigger_value": 127
+              }
+            },
+            "all_start_stop": {
+              "label": "All Start/Stop",
+              "aliases": ["all tracks", "all loops", "all start", "all stop", "start all tracks", "stop all tracks", "play all tracks", "trigger all tracks", "stop all loops"],
+              "binding_authority": "project_baseline",
+              "hardware_target": "ALL START/STOP1",
+              "message": {
+                "type": "control_change",
+                "channel": 1,
+                "controller": 85,
+                "mode": "momentary",
+                "minimum": 0,
+                "maximum": 127,
+                "trigger_value": 127
+              }
+            }
+          }
+        }
+      }
+    },
+    "roland_rd2000": {
+      "display_name": "Roland RD-2000",
+      "manufacturer": "Roland",
+      "model": "RD-2000",
+      "category": "stage_piano",
+      "enabled": true,
+      "aliases": ["rd-2000", "rd2000", "roland rd-2000", "roland rd2000", "stage piano"],
+      "connection": {
+        "protocol": "midi",
+        "port_hint": "RD-2000",
+        "default_channel": 1
+      },
+      "notes": "The RD-2000 has eight zones. Zone N uses MIDI channel N and CC 7, the MIDI channel-volume controller. Set each zone receive channel on the instrument to match. Received CC 7 addresses the internal zone on that channel.",
+      "control_groups": {
+        "volumes": {
+          "description": "Per-zone channel volume. A general volume request sets every zone. Naming one zone sets only that zone.",
+          "fan_out": true,
+          "aliases": ["volume", "volumes"],
+          "controls": {
+            "zone_1": {
+              "label": "Zone 1 Volume",
+              "aliases": ["zone 1", "zone1", "zone one", "slider 1"],
+              "binding_authority": "midi_specification",
+              "hardware_target": "Zone 1 channel volume",
+              "message": {
+                "type": "control_change",
+                "channel": 1,
+                "controller": 7,
+                "mode": "absolute",
+                "minimum": 0,
+                "maximum": 127
+              }
+            },
+            "zone_2": {
+              "label": "Zone 2 Volume",
+              "aliases": ["zone 2", "zone2", "zone two", "slider 2"],
+              "binding_authority": "midi_specification",
+              "hardware_target": "Zone 2 channel volume",
+              "message": {
+                "type": "control_change",
+                "channel": 2,
+                "controller": 7,
+                "mode": "absolute",
+                "minimum": 0,
+                "maximum": 127
+              }
+            },
+            "zone_3": {
+              "label": "Zone 3 Volume",
+              "aliases": ["zone 3", "zone3", "zone three", "slider 3"],
+              "binding_authority": "midi_specification",
+              "hardware_target": "Zone 3 channel volume",
+              "message": {
+                "type": "control_change",
+                "channel": 3,
+                "controller": 7,
+                "mode": "absolute",
+                "minimum": 0,
+                "maximum": 127
+              }
+            },
+            "zone_4": {
+              "label": "Zone 4 Volume",
+              "aliases": ["zone 4", "zone4", "zone four", "slider 4"],
+              "binding_authority": "midi_specification",
+              "hardware_target": "Zone 4 channel volume",
+              "message": {
+                "type": "control_change",
+                "channel": 4,
+                "controller": 7,
+                "mode": "absolute",
+                "minimum": 0,
+                "maximum": 127
+              }
+            },
+            "zone_5": {
+              "label": "Zone 5 Volume",
+              "aliases": ["zone 5", "zone5", "zone five", "slider 5"],
+              "binding_authority": "midi_specification",
+              "hardware_target": "Zone 5 channel volume",
+              "message": {
+                "type": "control_change",
+                "channel": 5,
+                "controller": 7,
+                "mode": "absolute",
+                "minimum": 0,
+                "maximum": 127
+              }
+            },
+            "zone_6": {
+              "label": "Zone 6 Volume",
+              "aliases": ["zone 6", "zone6", "zone six", "slider 6"],
+              "binding_authority": "midi_specification",
+              "hardware_target": "Zone 6 channel volume",
+              "message": {
+                "type": "control_change",
+                "channel": 6,
+                "controller": 7,
+                "mode": "absolute",
+                "minimum": 0,
+                "maximum": 127
+              }
+            },
+            "zone_7": {
+              "label": "Zone 7 Volume",
+              "aliases": ["zone 7", "zone7", "zone seven", "slider 7"],
+              "binding_authority": "midi_specification",
+              "hardware_target": "Zone 7 channel volume",
+              "message": {
+                "type": "control_change",
+                "channel": 7,
+                "controller": 7,
+                "mode": "absolute",
+                "minimum": 0,
+                "maximum": 127
+              }
+            },
+            "zone_8": {
+              "label": "Zone 8 Volume",
+              "aliases": ["zone 8", "zone8", "zone eight", "slider 8"],
+              "binding_authority": "midi_specification",
+              "hardware_target": "Zone 8 channel volume",
+              "message": {
+                "type": "control_change",
+                "channel": 8,
+                "controller": 7,
+                "mode": "absolute",
+                "minimum": 0,
+                "maximum": 127
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+</file>
+
+<file path="studio-ai-brain/manuals/.gitkeep">
+
+</file>
+
+<file path="studio-ai-brain/brain_service.py">
+"""Studio AI Brain.
+
+FastAPI service that turns a text prompt into a MIDI execution payload
+using the baseline device map in config/devices.json.
+
+The planner is deterministic. It does not call a language model and it
+does not open a MIDI port. Run it from any working directory:
+
+    python brain_service.py
+
+The process listens on 127.0.0.1:8000 unless STUDIO_AI_HOST or
+STUDIO_AI_PORT is set. An optional .env file in the project root is
+loaded with python-dotenv. STUDIO_AI_DEVICES_PATH can replace the map.
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+import os
+import re
+import sys
+import uuid
+from collections.abc import Iterable, Sequence
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from functools import lru_cache
+from pathlib import Path
+from typing import Annotated, Literal
+
+import uvicorn
+from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator, model_validator
+
+if sys.version_info < (3, 10):
+    raise RuntimeError("studio-ai-brain requires Python 3.10 or newer")
+
+SERVICE_NAME = "studio-ai-brain"
+SERVICE_VERSION = "1.0.0"
+PROJECT_ROOT = Path(__file__).resolve().parent
+_ID_PATTERN = re.compile(r"^[a-z][a-z0-9_]*$")
+_MAP_ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
+_NUMBER_PATTERN = re.compile(r"(?<![0-9])([0-9]{1,3})(?![0-9])")
+_VALUE_WINDOW = 80
+logger = logging.getLogger("studio_ai_brain")
+
+MMC_COMMAND_BYTES: dict[str, int] = {
+    "stop": 0x01,
+    "play": 0x02,
+    "deferred_play": 0x03,
+    "fast_forward": 0x04,
+    "rewind": 0x05,
+    "record_strobe": 0x06,
+    "record_exit": 0x07,
+    "record_pause": 0x08,
+    "pause": 0x09,
+}
+
+BindingAuthority = Literal[
+    "mmc_specification",
+    "manufacturer_documented",
+    "midi_specification",
+    "project_baseline",
+]
+DeviceCategory = Literal["daw", "synthesizer", "looper", "stage_piano"]
+MmcCommand = Literal[
+    "stop",
+    "play",
+    "deferred_play",
+    "fast_forward",
+    "rewind",
+    "record_strobe",
+    "record_exit",
+    "record_pause",
+    "pause",
+]
+ValueSource = Literal["prompt", "trigger"]
+PlanStatus = Literal["planned", "no_actions_matched"]
+
+
+class MapModel(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+
+class ApiModel(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+
+def _required_text(value: str) -> str:
+    cleaned = " ".join(value.split())
+    if not cleaned:
+        raise ValueError("must not be blank")
+    return cleaned
+
+
+def _optional_text(value: str | None) -> str | None:
+    if value is None:
+        return None
+    return _required_text(value)
+
+
+def _normalize_aliases(values: list[str]) -> list[str]:
+    cleaned: list[str] = []
+    seen: set[str] = set()
+    for value in values:
+        item = " ".join(value.split()).casefold()
+        if len(item) < 2:
+            raise ValueError(f"alias {item!r} is too short")
+        if item in seen:
+            raise ValueError(f"duplicate alias {item!r}")
+        seen.add(item)
+        cleaned.append(item)
+    return cleaned
+
+
+def _check_ids(keys: Iterable[str], label: str) -> None:
+    for key in keys:
+        if _ID_PATTERN.fullmatch(key) is None:
+            raise ValueError(f"{label} id {key!r} must match {_ID_PATTERN.pattern}")
+
+
+def mmc_sysex(mmc_device_id: int, command_byte: int) -> list[int]:
+    """Build an MMC command: F0 7F <device-id> 06 <command> F7."""
+    return [0xF0, 0x7F, mmc_device_id, 0x06, command_byte, 0xF7]
+
+
+class ConnectionSpec(MapModel):
+    protocol: Literal["midi"]
+    port_hint: str = Field(min_length=1)
+    default_channel: int = Field(ge=1, le=16)
+
+    @field_validator("port_hint")
+    @classmethod
+    def _port_hint(cls, value: str) -> str:
+        return _required_text(value)
+
+
+class ControlChangeMessage(MapModel):
+    type: Literal["control_change"]
+    channel: int = Field(ge=1, le=16)
+    controller: int = Field(ge=0, le=127)
+    mode: Literal["absolute", "momentary"]
+    minimum: int = Field(default=0, ge=0, le=127)
+    maximum: int = Field(default=127, ge=0, le=127)
+    trigger_value: int | None = Field(default=None, ge=0, le=127)
+
+    @model_validator(mode="after")
+    def _ranges(self) -> ControlChangeMessage:
+        if self.minimum > self.maximum:
+            raise ValueError("minimum cannot exceed maximum")
+        if self.mode == "momentary":
+            if self.trigger_value is None:
+                raise ValueError("momentary controls require trigger_value")
+            if not self.minimum <= self.trigger_value <= self.maximum:
+                raise ValueError("trigger_value is outside minimum/maximum")
+        elif self.trigger_value is not None:
+            raise ValueError("absolute controls cannot set trigger_value")
+        return self
+
+
+class MmcMessage(MapModel):
+    type: Literal["mmc"]
+    mmc_device_id: int = Field(ge=0, le=127)
+    command: MmcCommand
+    command_byte: int = Field(ge=0, le=127)
+
+    @model_validator(mode="after")
+    def _command_byte(self) -> MmcMessage:
+        expected = MMC_COMMAND_BYTES[self.command]
+        if self.command_byte != expected:
+            raise ValueError(
+                f"MMC command {self.command} must use command_byte {expected}, got {self.command_byte}"
+            )
+        return self
+
+
+MidiBinding = Annotated[ControlChangeMessage | MmcMessage, Field(discriminator="type")]
+
+
+class ControlSpec(MapModel):
+    label: str = Field(min_length=1)
+    aliases: list[str] = Field(min_length=1)
+    binding_authority: BindingAuthority
+    hardware_target: str = Field(min_length=1)
+    message: MidiBinding
+    notes: str | None = None
+
+    @field_validator("label", "hardware_target")
+    @classmethod
+    def _labels(cls, value: str) -> str:
+        return _required_text(value)
+
+    @field_validator("notes")
+    @classmethod
+    def _notes(cls, value: str | None) -> str | None:
+        return _optional_text(value)
+
+    @field_validator("aliases")
+    @classmethod
+    def _aliases(cls, values: list[str]) -> list[str]:
+        return _normalize_aliases(values)
+
+
+class ControlGroup(MapModel):
+    description: str = Field(min_length=1)
+    fan_out: bool = False
+    aliases: list[str] = Field(default_factory=list)
+    controls: dict[str, ControlSpec]
+
+    @field_validator("description")
+    @classmethod
+    def _description(cls, value: str) -> str:
+        return _required_text(value)
+
+    @field_validator("aliases")
+    @classmethod
+    def _aliases(cls, values: list[str]) -> list[str]:
+        return _normalize_aliases(values)
+
+    @model_validator(mode="after")
+    def _group_rules(self) -> ControlGroup:
+        _check_ids(self.controls, "control")
+        if not self.controls:
+            raise ValueError("control group must contain at least one control")
+        if self.fan_out and not self.aliases:
+            raise ValueError("fan_out groups require at least one alias")
+        return self
+
+
+class DeviceSpec(MapModel):
+    display_name: str = Field(min_length=1)
+    manufacturer: str = Field(min_length=1)
+    model: str = Field(min_length=1)
+    category: DeviceCategory
+    enabled: bool = True
+    aliases: list[str] = Field(min_length=1)
+    connection: ConnectionSpec
+    notes: str | None = None
+    control_groups: dict[str, ControlGroup]
+
+    @field_validator("display_name", "manufacturer", "model")
+    @classmethod
+    def _names(cls, value: str) -> str:
+        return _required_text(value)
+
+    @field_validator("notes")
+    @classmethod
+    def _notes(cls, value: str | None) -> str | None:
+        return _optional_text(value)
+
+    @field_validator("aliases")
+    @classmethod
+    def _aliases(cls, values: list[str]) -> list[str]:
+        return _normalize_aliases(values)
+
+    @model_validator(mode="after")
+    def _device_rules(self) -> DeviceSpec:
+        _check_ids(self.control_groups, "control group")
+        if not self.control_groups:
+            raise ValueError("device must contain at least one control group")
+        seen_aliases: dict[str, str] = {}
+        seen_cc: dict[tuple[int, int], str] = {}
+        seen_mmc: dict[str, str] = {}
+
+        def claim_alias(alias: str, owner: str) -> None:
+            previous = seen_aliases.get(alias)
+            if previous is not None:
+                raise ValueError(f"alias {alias!r} is used by {previous} and {owner}")
+            seen_aliases[alias] = owner
+
+        for alias in self.aliases:
+            claim_alias(alias, "device")
+        for group_id, group in self.control_groups.items():
+            for alias in group.aliases:
+                claim_alias(alias, f"group {group_id}")
+            for control_id, control in group.controls.items():
+                owner = f"{group_id}.{control_id}"
+                for alias in control.aliases:
+                    claim_alias(alias, owner)
+                message = control.message
+                if isinstance(message, ControlChangeMessage):
+                    key = (message.channel, message.controller)
+                    if key in seen_cc:
+                        raise ValueError(
+                            f"CC {message.controller} on channel {message.channel} "
+                            f"is used by {seen_cc[key]} and {owner}"
+                        )
+                    seen_cc[key] = owner
+                else:
+                    if message.command in seen_mmc:
+                        raise ValueError(
+                            f"MMC command {message.command} is used by {seen_mmc[message.command]} and {owner}"
+                        )
+                    seen_mmc[message.command] = owner
+        return self
+
+
+class DeviceMap(MapModel):
+    schema_version: str = Field(pattern=r"^[0-9]+\.[0-9]+\.[0-9]+$")
+    map_id: str = Field(min_length=1)
+    channel_numbering: Literal["display_1_to_16"]
+    description: str = Field(min_length=1)
+    devices: dict[str, DeviceSpec]
+
+    @field_validator("map_id")
+    @classmethod
+    def _map_id(cls, value: str) -> str:
+        cleaned = _required_text(value)
+        if _MAP_ID_PATTERN.fullmatch(cleaned) is None:
+            raise ValueError(f"map_id {cleaned!r} must match {_MAP_ID_PATTERN.pattern}")
+        return cleaned
+
+    @field_validator("description")
+    @classmethod
+    def _description(cls, value: str) -> str:
+        return _required_text(value)
+
+    @model_validator(mode="after")
+    def _devices_present(self) -> DeviceMap:
+        _check_ids(self.devices, "device")
+        if not self.devices:
+            raise ValueError("devices must not be empty")
+        return self
+
+
+class OrchestrateRequest(ApiModel):
+    prompt: str = Field(min_length=1, max_length=4000)
+    target_device_ids: list[str] = Field(default_factory=list, max_length=32)
+    session_id: str | None = Field(default=None, max_length=128)
+
+    @field_validator("prompt", "session_id")
+    @classmethod
+    def _strip_text(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        cleaned = value.strip()
+        if not cleaned:
+            raise ValueError("must not be blank")
+        return cleaned
+
+    @field_validator("target_device_ids")
+    @classmethod
+    def _device_ids(cls, values: list[str]) -> list[str]:
+        cleaned = [value.strip() for value in values]
+        if any(not value for value in cleaned):
+            raise ValueError("target_device_ids must not contain blank ids")
+        if any(len(value) > 64 for value in cleaned):
+            raise ValueError("target_device_ids entries must be 64 characters or fewer")
+        if len(set(cleaned)) != len(cleaned):
+            raise ValueError("target_device_ids must be unique")
+        return cleaned
+
+
+class ResolvedControlChange(ApiModel):
+    type: Literal["control_change"]
+    channel: int = Field(ge=1, le=16)
+    controller: int = Field(ge=0, le=127)
+    value: int = Field(ge=0, le=127)
+
+
+class ResolvedMmc(ApiModel):
+    type: Literal["mmc"]
+    mmc_device_id: int = Field(ge=0, le=127)
+    command: MmcCommand
+    command_byte: int = Field(ge=0, le=127)
+    sysex: list[int] = Field(min_length=6, max_length=6)
+
+    @model_validator(mode="after")
+    def _sysex(self) -> ResolvedMmc:
+        expected = mmc_sysex(self.mmc_device_id, self.command_byte)
+        if self.sysex != expected:
+            raise ValueError("sysex does not match the MMC command")
+        return self
+
+
+ResolvedMidi = Annotated[ResolvedControlChange | ResolvedMmc, Field(discriminator="type")]
+
+
+class ExecutionStep(ApiModel):
+    step_index: int = Field(ge=0)
+    device_id: str
+    port_hint: str
+    control_group: str
+    control_id: str
+    label: str
+    hardware_target: str
+    binding_authority: BindingAuthority
+    matched_alias: str
+    value_source: ValueSource
+    midi: ResolvedMidi
+
+
+class ExecutionPayload(ApiModel):
+    service: Literal["studio-ai-brain"] = SERVICE_NAME
+    service_version: str
+    planner: Literal["deterministic_mock"] = "deterministic_mock"
+    schema_version: str
+    map_id: str
+    map_path: str
+    channel_numbering: Literal["display_1_to_16"]
+    request_id: str
+    generated_at: str
+    session_id: str | None
+    status: PlanStatus
+    prompt: str
+    available_device_ids: list[str]
+    disabled_device_ids: list[str]
+    referenced_device_ids: list[str]
+    steps: list[ExecutionStep]
+    warnings: list[str]
+
+
+class HealthResponse(ApiModel):
+    status: Literal["ok"]
+    service: Literal["studio-ai-brain"]
+    service_version: str
+    map_id: str
+    schema_version: str
+    map_path: str
+    device_count: int = Field(ge=0)
+    manuals_path: str
+    manuals_present: bool
+
+
+class UnknownDeviceError(Exception):
+    def __init__(self, unknown: list[str], available: list[str]) -> None:
+        super().__init__(", ".join(unknown))
+        self.unknown = unknown
+        self.available = available
+
+
+class DeviceRegistry:
+    def __init__(self, device_map: DeviceMap, source_path: Path) -> None:
+        self.device_map = device_map
+        self.source_path = source_path
+
+    @classmethod
+    def load(cls, path: Path) -> DeviceRegistry:
+        return cls(load_device_map(path), path)
+
+    def map_path(self) -> str:
+        return display_path(self.source_path)
+
+
+@dataclass(frozen=True)
+class ControlHit:
+    device_id: str
+    group_id: str
+    control_id: str
+    span: tuple[int, int]
+    alias: str
+
+    @property
+    def specificity(self) -> int:
+        return len(self.alias)
+
+
+@dataclass(frozen=True)
+class NumberHit:
+    span: tuple[int, int]
+    value: int
+
+
+@dataclass(frozen=True)
+class ScopeDecision:
+    scope: list[str]
+    warnings: list[str]
+    enabled_mentioned: list[str]
+
+
+@dataclass(frozen=True)
+class ValueFailure:
+    hit: ControlHit
+    kind: Literal["missing", "range"]
+    value: int | None
+    minimum: int
+    maximum: int
+
+
+def bootstrap_env() -> None:
+    load_dotenv(PROJECT_ROOT / ".env", override=False)
+
+
+def manuals_directory() -> Path:
+    return PROJECT_ROOT / "manuals"
+
+
+def default_devices_path() -> Path:
+    return PROJECT_ROOT / "config" / "devices.json"
+
+
+def resolve_devices_path() -> Path:
+    override = os.getenv("STUDIO_AI_DEVICES_PATH", "").strip()
+    if not override:
+        return default_devices_path()
+    path = Path(override).expanduser()
+    if not path.is_absolute():
+        path = PROJECT_ROOT / path
+    return path
+
+
+def display_path(path: Path) -> str:
+    resolved = path.resolve()
+    try:
+        return resolved.relative_to(PROJECT_ROOT).as_posix()
+    except ValueError:
+        return resolved.as_posix()
+
+
+def load_device_map(path: Path) -> DeviceMap:
+    if not path.is_file():
+        raise FileNotFoundError(f"Device map not found: {path}")
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"Device map is not valid JSON: {path} ({exc})") from exc
+    try:
+        return DeviceMap.model_validate(raw)
+    except ValidationError as exc:
+        raise ValueError(f"Device map failed validation: {path}\n{exc}") from exc
+
+
+def utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
+
+
+def normalize_text(value: str) -> str:
+    return " ".join(value.casefold().split())
+
+
+@lru_cache(maxsize=512)
+def _alias_pattern(alias: str) -> re.Pattern[str]:
+    return re.compile(rf"(?<!\w){re.escape(alias)}(?!\w)")
+
+
+def alias_span(text: str, alias: str) -> tuple[int, int] | None:
+    match = _alias_pattern(alias).search(text)
+    if match is None:
+        return None
+    return match.start(), match.end()
+
+
+def best_alias(text: str, aliases: Sequence[str]) -> tuple[str, tuple[int, int]] | None:
+    winner_rank: tuple[int, int] | None = None
+    winner: tuple[str, tuple[int, int]] | None = None
+    for alias in aliases:
+        span = alias_span(text, alias)
+        if span is None:
+            continue
+        rank = (len(alias), -span[0])
+        if winner_rank is None or rank > winner_rank:
+            winner_rank = rank
+            winner = (alias, span)
+    return winner
+
+
+def spans_overlap(left: tuple[int, int], right: tuple[int, int]) -> bool:
+    return left[0] < right[1] and right[0] < left[1]
+
+
+def span_contains(outer: tuple[int, int], inner: tuple[int, int]) -> bool:
+    return outer[0] <= inner[0] and inner[1] <= outer[1] and outer != inner
+
+
+def gap(left: tuple[int, int], right: tuple[int, int]) -> int:
+    if left[1] <= right[0]:
+        return right[0] - left[1]
+    if right[1] <= left[0]:
+        return left[0] - right[1]
+    return 0
+
+
+def mentioned_devices(text: str, devices: dict[str, DeviceSpec]) -> tuple[list[str], list[tuple[int, int]]]:
+    names: list[str] = []
+    spans: list[tuple[int, int]] = []
+    for device_id, device in devices.items():
+        found = best_alias(text, device.aliases)
+        if found is None:
+            continue
+        _alias, span = found
+        names.append(device_id)
+        spans.append(span)
+    return names, spans
+
+
+def resolve_scope(
+    devices: dict[str, DeviceSpec],
+    mentioned: Sequence[str],
+    targets: Sequence[str],
+) -> ScopeDecision:
+    warnings: list[str] = []
+    unknown = [device_id for device_id in targets if device_id not in devices]
+    if unknown:
+        raise UnknownDeviceError(unknown, list(devices))
+
+    disabled_seen: set[str] = set()
+    for device_id in [*targets, *mentioned]:
+        device = devices.get(device_id)
+        if device is None or device.enabled or device_id in disabled_seen:
+            continue
+        disabled_seen.add(device_id)
+        warnings.append(f"{device_id} is disabled and was skipped")
+
+    enabled_targets = [device_id for device_id in targets if devices[device_id].enabled]
+    enabled_mentioned = [device_id for device_id in mentioned if devices[device_id].enabled]
+    if targets:
+        scope = enabled_targets
+        excluded = [device_id for device_id in enabled_mentioned if device_id not in scope]
+        if len(excluded) == 1:
+            warnings.append(f"{excluded[0]} was named in the prompt but is outside target_device_ids")
+        elif excluded:
+            warnings.append(f"{', '.join(excluded)} were named in the prompt but are outside target_device_ids")
+    else:
+        scope = [device_id for device_id, device in devices.items() if device.enabled]
+
+    return ScopeDecision(scope, warnings, enabled_mentioned)
+
+
+def suppress_shorter_hits(hits: Sequence[ControlHit]) -> list[ControlHit]:
+    kept: list[ControlHit] = []
+    for index, hit in enumerate(hits):
+        dominated = False
+        for other_index, other in enumerate(hits):
+            if other_index == index or other.specificity <= hit.specificity:
+                continue
+            same_device = other.device_id == hit.device_id
+            if span_contains(other.span, hit.span) or (same_device and spans_overlap(other.span, hit.span)):
+                dominated = True
+                break
+        if not dominated:
+            kept.append(hit)
+    return kept
+
+
+def collect_hits(text: str, devices: dict[str, DeviceSpec], scope: Sequence[str]) -> list[ControlHit]:
+    individuals: list[ControlHit] = []
+    scope_set = set(scope)
+    for device_id, device in devices.items():
+        if device_id not in scope_set:
+            continue
+        for group_id, group in device.control_groups.items():
+            for control_id, control in group.controls.items():
+                found = best_alias(text, control.aliases)
+                if found is None:
+                    continue
+                alias, span = found
+                individuals.append(ControlHit(device_id, group_id, control_id, span, alias))
+
+    kept = suppress_shorter_hits(individuals)
+    groups_with_hits = {(hit.device_id, hit.group_id) for hit in kept}
+    selected = list(kept)
+    for device_id in scope:
+        device = devices[device_id]
+        for group_id, group in device.control_groups.items():
+            if (device_id, group_id) in groups_with_hits or not group.fan_out:
+                continue
+            found = best_alias(text, group.aliases)
+            if found is None:
+                continue
+            alias, span = found
+            for control_id in group.controls:
+                selected.append(ControlHit(device_id, group_id, control_id, span, alias))
+    return selected
+
+
+def sort_hits(hits: Sequence[ControlHit], devices: dict[str, DeviceSpec]) -> list[ControlHit]:
+    device_order = {device_id: index for index, device_id in enumerate(devices)}
+    group_order: dict[tuple[str, str], int] = {}
+    control_order: dict[tuple[str, str, str], int] = {}
+    for device_id, device in devices.items():
+        for group_index, (group_id, group) in enumerate(device.control_groups.items()):
+            group_order[(device_id, group_id)] = group_index
+            for control_index, control_id in enumerate(group.controls):
+                control_order[(device_id, group_id, control_id)] = control_index
+    return sorted(
+        hits,
+        key=lambda hit: (
+            hit.span[0],
+            hit.span[1],
+            device_order[hit.device_id],
+            group_order[(hit.device_id, hit.group_id)],
+            control_order[(hit.device_id, hit.group_id, hit.control_id)],
+        ),
+    )
+
+
+def extract_numbers(text: str, blocked: Sequence[tuple[int, int]]) -> list[NumberHit]:
+    numbers: list[NumberHit] = []
+    for match in _NUMBER_PATTERN.finditer(text):
+        span = (match.start(), match.end())
+        if any(spans_overlap(span, block) for block in blocked):
+            continue
+        numbers.append(NumberHit(span, int(match.group(1))))
+    return numbers
+
+
+def assign_values(mentions: Sequence[tuple[int, int]], numbers: Sequence[NumberHit]) -> dict[int, int]:
+    assigned: dict[int, int] = {}
+    if not mentions or not numbers:
+        return assigned
+    if len(numbers) == 1:
+        number = numbers[0]
+        for index, span in enumerate(mentions):
+            if gap(span, number.span) <= _VALUE_WINDOW:
+                assigned[index] = number.value
+        return assigned
+
+    pairs: list[tuple[int, int, int, int]] = []
+    for mention_index, span in enumerate(mentions):
+        for number_index, number in enumerate(numbers):
+            distance = gap(span, number.span)
+            if distance > _VALUE_WINDOW:
+                continue
+            follows_penalty = 0 if number.span[0] >= span[1] else 1
+            pairs.append((distance, follows_penalty, mention_index, number_index))
+    pairs.sort()
+    used_mentions: set[int] = set()
+    used_numbers: set[int] = set()
+    for _distance, _follows_penalty, mention_index, number_index in pairs:
+        if mention_index in used_mentions or number_index in used_numbers:
+            continue
+        used_mentions.add(mention_index)
+        used_numbers.add(number_index)
+        assigned[mention_index] = numbers[number_index].value
+    return assigned
+
+
+def _is_absolute(control: ControlSpec) -> bool:
+    message = control.message
+    return isinstance(message, ControlChangeMessage) and message.mode == "absolute"
+
+
+def failure_warnings(failures: Sequence[ValueFailure]) -> list[str]:
+    grouped: dict[tuple[str, str, tuple[int, int], str, int | None, int, int], list[str]] = {}
+    order: list[tuple[str, str, tuple[int, int], str, int | None, int, int]] = []
+    for failure in failures:
+        key = (
+            failure.hit.device_id,
+            failure.hit.group_id,
+            failure.hit.span,
+            failure.kind,
+            failure.value,
+            failure.minimum,
+            failure.maximum,
+        )
+        if key not in grouped:
+            grouped[key] = []
+            order.append(key)
+        grouped[key].append(failure.hit.control_id)
+
+    messages: list[str] = []
+    for key in order:
+        device_id, group_id, _span, kind, value, minimum, maximum = key
+        names = ", ".join(grouped[key])
+        if kind == "missing":
+            messages.append(
+                f"{device_id}.{group_id} ({names}) matched but no value between {minimum} and {maximum} was found"
+            )
+        else:
+            messages.append(f"{device_id}.{group_id} ({names}) value {value} is outside {minimum}-{maximum}")
+    return messages
+
+
+def build_steps(
+    hits: Sequence[ControlHit],
+    devices: dict[str, DeviceSpec],
+    assigned: dict[int, int],
+    span_to_mention: dict[tuple[int, int], int],
+) -> tuple[list[ExecutionStep], list[str]]:
+    steps: list[ExecutionStep] = []
+    failures: list[ValueFailure] = []
+    for hit in hits:
+        device = devices[hit.device_id]
+        control = device.control_groups[hit.group_id].controls[hit.control_id]
+        message = control.message
+        if isinstance(message, MmcMessage):
+            midi: ResolvedMidi = ResolvedMmc(
+                type="mmc",
+                mmc_device_id=message.mmc_device_id,
+                command=message.command,
+                command_byte=message.command_byte,
+                sysex=mmc_sysex(message.mmc_device_id, message.command_byte),
+            )
+            value_source: ValueSource = "trigger"
+        elif message.mode == "momentary":
+            if message.trigger_value is None:
+                raise RuntimeError(f"{hit.device_id}.{hit.group_id}.{hit.control_id} is missing trigger_value")
+            midi = ResolvedControlChange(
+                type="control_change",
+                channel=message.channel,
+                controller=message.controller,
+                value=message.trigger_value,
+            )
+            value_source = "trigger"
+        else:
+            value = assigned.get(span_to_mention[hit.span])
+            if value is None or not message.minimum <= value <= message.maximum:
+                failures.append(
+                    ValueFailure(
+                        hit=hit,
+                        kind="missing" if value is None else "range",
+                        value=value,
+                        minimum=message.minimum,
+                        maximum=message.maximum,
+                    )
+                )
+                continue
+            midi = ResolvedControlChange(
+                type="control_change",
+                channel=message.channel,
+                controller=message.controller,
+                value=value,
+            )
+            value_source = "prompt"
+
+        steps.append(
+            ExecutionStep(
+                step_index=len(steps),
+                device_id=hit.device_id,
+                port_hint=device.connection.port_hint,
+                control_group=hit.group_id,
+                control_id=hit.control_id,
+                label=control.label,
+                hardware_target=control.hardware_target,
+                binding_authority=control.binding_authority,
+                matched_alias=hit.alias,
+                value_source=value_source,
+                midi=midi,
+            )
+        )
+    return steps, failure_warnings(failures)
+
+
+def plan_execution(request: OrchestrateRequest, registry: DeviceRegistry) -> ExecutionPayload:
+    device_map = registry.device_map
+    devices = device_map.devices
+    text = normalize_text(request.prompt)
+    mentioned, device_spans = mentioned_devices(text, devices)
+    decision = resolve_scope(devices, mentioned, request.target_device_ids)
+    hits = sort_hits(collect_hits(text, devices, decision.scope), devices)
+    warnings = list(decision.warnings)
+    if decision.enabled_mentioned:
+        allowed = set(decision.enabled_mentioned).intersection(decision.scope)
+        kept: list[ControlHit] = []
+        dropped: dict[str, list[str]] = {}
+        for hit in hits:
+            if hit.device_id in allowed:
+                kept.append(hit)
+                continue
+            control_ids = dropped.setdefault(hit.device_id, [])
+            if hit.control_id not in control_ids:
+                control_ids.append(hit.control_id)
+        for device_id, control_ids in dropped.items():
+            warnings.append(
+                f"{device_id} ({', '.join(control_ids)}) matched but was not named in the prompt"
+            )
+        hits = kept
+
+    span_to_mention: dict[tuple[int, int], int] = {}
+    mentions: list[tuple[int, int]] = []
+    for hit in hits:
+        control = devices[hit.device_id].control_groups[hit.group_id].controls[hit.control_id]
+        if not _is_absolute(control) or hit.span in span_to_mention:
+            continue
+        span_to_mention[hit.span] = len(mentions)
+        mentions.append(hit.span)
+
+    blocked = [*device_spans, *(hit.span for hit in hits)]
+    assigned = assign_values(mentions, extract_numbers(text, blocked))
+    steps, value_warnings = build_steps(hits, devices, assigned, span_to_mention)
+
+    hit_devices = {hit.device_id for hit in hits}
+    for device_id in decision.enabled_mentioned:
+        if device_id in decision.scope and device_id not in hit_devices:
+            warnings.append(f"{device_id} was named in the prompt but no mapped control matched")
+    warnings.extend(value_warnings)
+
+    referenced: list[str] = []
+    seen: set[str] = set()
+    for step in steps:
+        if step.device_id not in seen:
+            seen.add(step.device_id)
+            referenced.append(step.device_id)
+
+    return ExecutionPayload(
+        service_version=SERVICE_VERSION,
+        schema_version=device_map.schema_version,
+        map_id=device_map.map_id,
+        map_path=registry.map_path(),
+        channel_numbering=device_map.channel_numbering,
+        request_id=str(uuid.uuid4()),
+        generated_at=utc_now(),
+        session_id=request.session_id,
+        status="planned" if steps else "no_actions_matched",
+        prompt=request.prompt,
+        available_device_ids=list(devices),
+        disabled_device_ids=[device_id for device_id, device in devices.items() if not device.enabled],
+        referenced_device_ids=referenced,
+        steps=steps,
+        warnings=warnings,
+    )
+
+
+def create_app() -> FastAPI:
+    bootstrap_env()
+    registry = DeviceRegistry.load(resolve_devices_path())
+    logger.info(
+        "loaded %s schema %s with %d devices from %s",
+        registry.device_map.map_id,
+        registry.device_map.schema_version,
+        len(registry.device_map.devices),
+        registry.map_path(),
+    )
+    app = FastAPI(
+        title="Studio AI Brain",
+        version=SERVICE_VERSION,
+        summary="Plans multi-device MIDI execution payloads from a text prompt.",
+        description=(
+            "Background orchestration service. The deterministic planner reads the "
+            "device map and does not call an external language model or open a MIDI port."
+        ),
+    )
+    app.state.registry = registry
+
+    @app.get("/health", response_model=HealthResponse)
+    def health() -> HealthResponse:
+        device_map = registry.device_map
+        manuals = manuals_directory()
+        return HealthResponse(
+            status="ok",
+            service=SERVICE_NAME,
+            service_version=SERVICE_VERSION,
+            map_id=device_map.map_id,
+            schema_version=device_map.schema_version,
+            map_path=registry.map_path(),
+            device_count=len(device_map.devices),
+            manuals_path=display_path(manuals),
+            manuals_present=manuals.is_dir(),
+        )
+
+    @app.post("/v1/orchestrate", response_model=ExecutionPayload)
+    def orchestrate(body: OrchestrateRequest) -> ExecutionPayload:
+        try:
+            payload = plan_execution(body, registry)
+        except UnknownDeviceError as exc:
+            raise HTTPException(
+                status_code=422,
+                detail={
+                    "message": "Unknown target_device_ids.",
+                    "unknown_device_ids": exc.unknown,
+                    "available_device_ids": exc.available,
+                },
+            ) from exc
+        logger.info(
+            "orchestrate request_id=%s status=%s steps=%d warnings=%d",
+            payload.request_id,
+            payload.status,
+            len(payload.steps),
+            len(payload.warnings),
+        )
+        return payload
+
+    return app
+
+
+def resolve_port(raw: str | None) -> int:
+    if raw is None or not raw.strip():
+        return 8000
+    try:
+        port = int(raw)
+    except ValueError as exc:
+        raise SystemExit(f"STUDIO_AI_PORT must be an integer, got {raw!r}") from exc
+    if port < 1 or port > 65535:
+        raise SystemExit("STUDIO_AI_PORT must be between 1 and 65535")
+    return port
+
+
+def main() -> None:
+    bootstrap_env()
+    host = os.getenv("STUDIO_AI_HOST", "127.0.0.1").strip() or "127.0.0.1"
+    port = resolve_port(os.getenv("STUDIO_AI_PORT"))
+    uvicorn.run(app, host=host, port=port)
+
+
+app = create_app()
+
+
+if __name__ == "__main__":
+    main()
+</file>
+
+<file path="studio-ai-brain/requirements.txt">
+# Python 3.10+
+python-dotenv>=1.0.1,<2
+fastapi>=0.115.6,<1
+uvicorn>=0.32.1,<1
+pydantic>=2.10.0,<3
+</file>
+
+<file path=".repomixignore">
+manuals/**
+</file>
+
+<file path="Studio ai handover.txt">
+The Full Handover Specification
+
+
+Node 1: The AI Brain App (On the MSI GF63 Thin)
+
+• Location: studio-ai-agent/ directory on your laptop.
+• Core Role: Runs a ultra-fast, local open-source LLM (like Qwen-2.5-Coder-7B or Llama-3.2-3B) via Ollama/Page Assist. It reads your PDF manuals to learn your gear, maps your speech/text to intent, and fires JSON control packets across the network.
+• File Architecture:text
+studio-ai-agent/
+├── config/
+│   └── devices.json      <-- (The master hardware channel/CC dictionary)
+├── reference_rag/
+│   └── manuals/          <-- (Blofeld, RC-505, RD-2000 PDF user guides)
+└── brain_server.py       <-- (The local script prompting the LLM & sending JSON over network)
+Use code with caution.
+
+Node 2: The Studio Executor (On the i7 Desktop Hub)
+
+• Location: studio-executor/ directory on your Desktop PC.
+• Core Role: Zero visual bloat. It stays out of Cubase's way. It runs a microscopic python script that listens to the network port, intercepts the JSON decisions from the laptop, and pipes them directly into Cubase (via rtpMIDI) or your hardware (via physical USB ports).
+• File Architecture:text
+studio-executor/
+├── config/
+│   └── local_ports.json  <-- (Tells Python exactly which Windows MIDI port belongs to which synth)
+└── desk_receiver.py      <-- (The lightweight listener that flashes MIDI out to your gear)
+Use code with caution.
+
+🚀 The Operational Flow (How it plays out)
+
+1. You type/speak to your laptop: "Give me a deep space texture on the Blofeld and sync up the looper track 1."
+2. Laptop Brain acts: The local AI parses your manual data, reads devices.json, translates the request into an exact instruction set, and sends it via an HTTP/OSC network socket to the Desktop IP.
+3. Desktop Executor fires: The desktop listener hits your USB paths. Instantly, the Blofeld's filter sweeps, the RC-505 arms, and Cubase readies the track. Your audio remains entirely pop-and-crackle free.
+</file>
+
+</files>

@@ -1,0 +1,12 @@
+{
+  "provider_keys": {
+    "xai_grok": "",
+    "openai": "",
+    "anthropic": ""
+  },
+  "ui_theme": "dark_studio",
+  "network": {
+    "desktop_executor_ip": "192.168.0.103",
+    "port": 8080
+  }
+}

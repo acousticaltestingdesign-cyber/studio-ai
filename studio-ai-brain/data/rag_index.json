@@ -1,0 +1,7 @@
+{
+  "schema_version": "1.0.0",
+  "embedding": "signed_hash_v1",
+  "vector_dimensions": 256,
+  "sources": [],
+  "chunks": []
+}

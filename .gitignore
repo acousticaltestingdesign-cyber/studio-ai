@@ -1,0 +1,18 @@
+# Ignore local environment configs and secret keys
+*.env
+config.env
+*.key
+.repomixignore
+
+# Ignore Python compiler caches and operating system meta noise
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Ignore local database states and raw binaries
+data/rag_index.json
+bin/
+obj/

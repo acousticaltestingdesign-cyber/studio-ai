@@ -1,0 +1,33 @@
+
+The Full Handover Specification
+
+
+Node 1: The AI Brain App (On the MSI GF63 Thin)
+
+• Location: studio-ai-agent/ directory on your laptop.
+• Core Role: Runs a ultra-fast, local open-source LLM (like Qwen-2.5-Coder-7B or Llama-3.2-3B) via Ollama/Page Assist. It reads your PDF manuals to learn your gear, maps your speech/text to intent, and fires JSON control packets across the network.
+• File Architecture:text
+studio-ai-agent/
+├── config/
+│   └── devices.json      <-- (The master hardware channel/CC dictionary)
+├── reference_rag/
+│   └── manuals/          <-- (Blofeld, RC-505, RD-2000 PDF user guides)
+└── brain_server.py       <-- (The local script prompting the LLM & sending JSON over network)
+Use code with caution.
+
+Node 2: The Studio Executor (On the i7 Desktop Hub)
+
+• Location: studio-executor/ directory on your Desktop PC.
+• Core Role: Zero visual bloat. It stays out of Cubase's way. It runs a microscopic python script that listens to the network port, intercepts the JSON decisions from the laptop, and pipes them directly into Cubase (via rtpMIDI) or your hardware (via physical USB ports).
+• File Architecture:text
+studio-executor/
+├── config/
+│   └── local_ports.json  <-- (Tells Python exactly which Windows MIDI port belongs to which synth)
+└── desk_receiver.py      <-- (The lightweight listener that flashes MIDI out to your gear)
+Use code with caution.
+
+🚀 The Operational Flow (How it plays out)
+
+1. You type/speak to your laptop: "Give me a deep space texture on the Blofeld and sync up the looper track 1."
+2. Laptop Brain acts: The local AI parses your manual data, reads devices.json, translates the request into an exact instruction set, and sends it via an HTTP/OSC network socket to the Desktop IP.
+3. Desktop Executor fires: The desktop listener hits your USB paths. Instantly, the Blofeld's filter sweeps, the RC-505 arms, and Cubase readies the track. Your audio remains entirely pop-and-crackle free.

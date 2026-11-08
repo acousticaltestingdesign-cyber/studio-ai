@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark_studio">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark light">
+  <title>Studio AI Console</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23111416'/%3E%3Ccircle cx='8' cy='8' r='2.4' fill='%23f4f5f6'/%3E%3C/svg%3E">
+  <script>
+    (function () {
+      try {
+        var theme = localStorage.getItem("studio-ai-theme");
+        if (theme === "dark_studio" || theme === "cyberpunk_synth" || theme === "retro_analog") {
+          document.documentElement.setAttribute("data-theme", theme);
+        }
+      } catch (error) {
+        /* storage unavailable */
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="hud">
+    <header class="banner">
+      <div class="mark">
+        <strong>Studio AI</strong>
+        <span id="build-label">Control console</span>
+      </div>
+      <div class="themes" role="radiogroup" aria-label="Active theme">
+        <button type="button" data-theme-choice="dark_studio" aria-pressed="true">Dark Studio</button>
+        <button type="button" data-theme-choice="cyberpunk_synth" aria-pressed="false">Cyberpunk Synth</button>
+        <button type="button" data-theme-choice="retro_analog" aria-pressed="false">Retro Analog</button>
+      </div>
+      <ul class="keys" aria-label="Provider keys">
+        <li class="key" data-provider="xai_grok" data-on="false" aria-label="xAI key status unknown"><i aria-hidden="true"></i><span>xAI</span></li>
+        <li class="key" data-provider="openai" data-on="false" aria-label="OpenAI key status unknown"><i aria-hidden="true"></i><span>OpenAI</span></li>
+        <li class="key" data-provider="anthropic" data-on="false" aria-label="Anthropic key status unknown"><i aria-hidden="true"></i><span>Anthropic</span></li>
+      </ul>
+      <p class="theme-note" id="theme-note" role="status"></p>
+    </header>
+
+    <main class="stage">
+      <section class="command" aria-label="Studio commands">
+        <div class="section-kicker">
+          <span>Command</span>
+          <span id="route-kicker" class="highlight">Infer</span>
+        </div>
+        <div id="transcript" class="transcript" role="log">
+          <p class="placeholder" id="transcript-placeholder">Listening for a studio command.</p>
+        </div>
+        <form id="command-form" class="composer" data-route="infer" autocomplete="off">
+          <label class="sr-only" for="command-input">Studio command</label>
+          <textarea id="command-input" rows="3" maxlength="8000" spellcheck="true" autocapitalize="off" enterkeyhint="send" placeholder="Set the Blofeld filter cutoff to 42 and start Cubase playback."></textarea>
+          <div class="composer-bar">
+            <div class="route" role="radiogroup" aria-label="Send command to">
+              <button type="button" data-route="infer" aria-pressed="true">Infer</button>
+              <button type="button" data-route="orchestrate" aria-pressed="false">Orchestrate</button>
+            </div>
+            <label class="check" id="manuals-field">
+              <input id="use-manuals" type="checkbox" checked>
+              <span>Use manuals</span>
+            </label>
+            <span class="hint">Enter sends</span>
+            <span class="count" id="char-count">0 / 8000</span>
+            <button class="send" type="submit">Send</button>
+          </div>
+        </form>
+      </section>
+
+      <aside class="manuals" aria-label="Gear manuals">
+        <div class="section-kicker">
+          <span>Manuals</span>
+          <span id="chunk-count">Standby</span>
+        </div>
+        <label class="drop" id="drop-zone">
+          <input id="manual-input" class="sr-only" type="file" accept="application/pdf,.pdf" multiple>
+          <span class="reticle" aria-hidden="true"></span>
+          <strong>Drag &amp; Drop Manuals Here</strong>
+          <span class="drop-note">Indexes the dropped PDF from the brain's manuals folder.</span>
+        </label>
+        <ul class="drop-log" id="drop-log" role="log"></ul>
+      </aside>
+    </main>
+
+    <footer class="status">
+      <span class="link">
+        <i class="lamp" id="desktop-lamp" data-state="checking" aria-hidden="true"></i>
+        <span>Desktop</span>
+        <span id="desktop-address" class="highlight">192.168.0.103:8080</span>
+        <span id="desktop-state" role="status" data-state="checking">Checking</span>
+      </span>
+      <span class="link">
+        <i class="lamp" id="brain-lamp" data-state="checking" aria-hidden="true"></i>
+        <span>Brain</span>
+        <span id="brain-address">127.0.0.1:8000</span>
+        <span id="brain-state" role="status" data-state="checking">Checking</span>
+      </span>
+      <span class="status-spacer"></span>
+      <time id="clock"></time>
+    </footer>
+    <noscript><p class="noscript">JavaScript is required to reach the studio brain.</p></noscript>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

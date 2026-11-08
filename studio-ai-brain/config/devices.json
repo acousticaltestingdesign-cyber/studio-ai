@@ -1,0 +1,427 @@
+{
+  "schema_version": "1.0.0",
+  "map_id": "studio-ai-baseline",
+  "channel_numbering": "display_1_to_16",
+  "description": "Baseline multi-device MIDI map for studio-ai-brain. Channels are the numbers printed on the instruments (1-16), not the zero-based status nibble. Each device is planned onto its own port, so controller numbers may repeat across devices. PDF manuals belong in manuals/ and are indexed into data/rag_index.json. This device map does not read them.",
+  "devices": {
+    "cubase_daw": {
+      "display_name": "Cubase",
+      "manufacturer": "Steinberg",
+      "model": "Cubase",
+      "category": "daw",
+      "enabled": true,
+      "aliases": ["cubase", "steinberg cubase", "daw"],
+      "connection": {
+        "protocol": "midi",
+        "port_hint": "Cubase",
+        "default_channel": 1
+      },
+      "notes": "Enable MIDI Machine Control in Cubase under Transport > Project Synchronization Setup. Command bytes follow the MMC specification. mmc_device_id 127 is the all-call address. MMC does not use the connection channel.",
+      "control_groups": {
+        "transport": {
+          "description": "Transport commands. Each command has its own aliases, so one transport word does not fire the others.",
+          "fan_out": false,
+          "controls": {
+            "play": {
+              "label": "Play",
+              "aliases": ["play", "playback", "start playback"],
+              "binding_authority": "mmc_specification",
+              "hardware_target": "MMC Play",
+              "message": {
+                "type": "mmc",
+                "mmc_device_id": 127,
+                "command": "play",
+                "command_byte": 2
+              }
+            },
+            "stop": {
+              "label": "Stop",
+              "aliases": ["stop", "halt"],
+              "binding_authority": "mmc_specification",
+              "hardware_target": "MMC Stop",
+              "message": {
+                "type": "mmc",
+                "mmc_device_id": 127,
+                "command": "stop",
+                "command_byte": 1
+              }
+            },
+            "record": {
+              "label": "Record",
+              "aliases": ["record", "recording", "rec"],
+              "binding_authority": "mmc_specification",
+              "hardware_target": "MMC Record Strobe",
+              "message": {
+                "type": "mmc",
+                "mmc_device_id": 127,
+                "command": "record_strobe",
+                "command_byte": 6
+              }
+            },
+            "rewind": {
+              "label": "Rewind",
+              "aliases": ["rewind"],
+              "binding_authority": "mmc_specification",
+              "hardware_target": "MMC Rewind",
+              "message": {
+                "type": "mmc",
+                "mmc_device_id": 127,
+                "command": "rewind",
+                "command_byte": 5
+              }
+            },
+            "fast_forward": {
+              "label": "Fast Forward",
+              "aliases": ["fast forward", "fast-forward", "fastforward", "ffwd"],
+              "binding_authority": "mmc_specification",
+              "hardware_target": "MMC Fast Forward",
+              "message": {
+                "type": "mmc",
+                "mmc_device_id": 127,
+                "command": "fast_forward",
+                "command_byte": 4
+              }
+            },
+            "pause": {
+              "label": "Pause",
+              "aliases": ["pause"],
+              "binding_authority": "mmc_specification",
+              "hardware_target": "MMC Pause",
+              "message": {
+                "type": "mmc",
+                "mmc_device_id": 127,
+                "command": "pause",
+                "command_byte": 9
+              }
+            }
+          }
+        }
+      }
+    },
+    "waldorf_blofeld": {
+      "display_name": "Waldorf Blofeld",
+      "manufacturer": "Waldorf",
+      "model": "Blofeld",
+      "category": "synthesizer",
+      "enabled": true,
+      "aliases": ["blofeld", "waldorf", "waldorf blofeld"],
+      "connection": {
+        "protocol": "midi",
+        "port_hint": "Waldorf Blofeld",
+        "default_channel": 1
+      },
+      "notes": "Sound-parameter controllers on channel 1 (part 1). Filter 1 cutoff is CC 69, Filter 1 resonance is CC 70, Filter 2 cutoff is CC 80, and Filter 2 resonance is CC 81.",
+      "control_groups": {
+        "filter": {
+          "description": "Filter 1 is the default match for cutoff and resonance. Filter 2 is separate so a filter 2 request is not sent to Filter 1.",
+          "fan_out": false,
+          "controls": {
+            "filter_cutoff": {
+              "label": "Filter 1 Cutoff",
+              "aliases": ["filter cutoff", "cutoff", "filter 1 cutoff", "filter1 cutoff"],
+              "binding_authority": "manufacturer_documented",
+              "hardware_target": "Filter 1 Cutoff",
+              "message": {
+                "type": "control_change",
+                "channel": 1,
+                "controller": 69,
+                "mode": "absolute",
+                "minimum": 0,
+                "maximum": 127
+              }
+            },
+            "resonance": {
+              "label": "Filter 1 Resonance",
+              "aliases": ["resonance", "filter resonance", "filter 1 resonance", "filter1 resonance"],
+              "binding_authority": "manufacturer_documented",
+              "hardware_target": "Filter 1 Resonance",
+              "message": {
+                "type": "control_change",
+                "channel": 1,
+                "controller": 70,
+                "mode": "absolute",
+                "minimum": 0,
+                "maximum": 127
+              }
+            },
+            "filter_2_cutoff": {
+              "label": "Filter 2 Cutoff",
+              "aliases": ["filter 2 cutoff", "filter2 cutoff"],
+              "binding_authority": "manufacturer_documented",
+              "hardware_target": "Filter 2 Cutoff",
+              "message": {
+                "type": "control_change",
+                "channel": 1,
+                "controller": 80,
+                "mode": "absolute",
+                "minimum": 0,
+                "maximum": 127
+              }
+            },
+            "filter_2_resonance": {
+              "label": "Filter 2 Resonance",
+              "aliases": ["filter 2 resonance", "filter2 resonance"],
+              "binding_authority": "manufacturer_documented",
+              "hardware_target": "Filter 2 Resonance",
+              "message": {
+                "type": "control_change",
+                "channel": 1,
+                "controller": 81,
+                "mode": "absolute",
+                "minimum": 0,
+                "maximum": 127
+              }
+            }
+          }
+        }
+      }
+    },
+    "boss_rc505_mk2": {
+      "display_name": "Boss RC-505mk2",
+      "manufacturer": "Boss",
+      "model": "RC-505mk2",
+      "category": "looper",
+      "enabled": true,
+      "aliases": ["rc-505", "rc505", "rc-505mk2", "rc-505 mk2", "rc505mk2", "boss rc-505", "looper"],
+      "connection": {
+        "protocol": "midi",
+        "port_hint": "RC-505mk2",
+        "default_channel": 1
+      },
+      "notes": "The RC-505mk2 has no fixed track controllers. Program MENU > ASSIGN for each memory, then write the memory. Legal MIDI sources are CC 1-31 and CC 64-95. Set SOURCE to the controller in this map, SOURCE MODE to MOMENT, and TARGET to hardware_target. Set the receive channel to 1. Value 127 is the momentary press.",
+      "control_groups": {
+        "track_triggers": {
+          "description": "Momentary play/stop for the five phrase tracks, plus all-start/stop. Controllers 80-85 are in the assignable CC 64-95 range and avoid the GM performance controllers.",
+          "fan_out": false,
+          "controls": {
+            "track_1": {
+              "label": "Track 1 Play/Stop",
+              "aliases": ["track 1", "track1", "trk 1", "trk1", "loop 1", "track one", "loop one", "play track 1", "trigger track 1"],
+              "binding_authority": "project_baseline",
+              "hardware_target": "TRK1 PLAY/STOP1",
+              "message": {
+                "type": "control_change",
+                "channel": 1,
+                "controller": 80,
+                "mode": "momentary",
+                "minimum": 0,
+                "maximum": 127,
+                "trigger_value": 127
+              }
+            },
+            "track_2": {
+              "label": "Track 2 Play/Stop",
+              "aliases": ["track 2", "track2", "trk 2", "trk2", "loop 2", "track two", "loop two", "play track 2", "trigger track 2"],
+              "binding_authority": "project_baseline",
+              "hardware_target": "TRK2 PLAY/STOP1",
+              "message": {
+                "type": "control_change",
+                "channel": 1,
+                "controller": 81,
+                "mode": "momentary",
+                "minimum": 0,
+                "maximum": 127,
+                "trigger_value": 127
+              }
+            },
+            "track_3": {
+              "label": "Track 3 Play/Stop",
+              "aliases": ["track 3", "track3", "trk 3", "trk3", "loop 3", "track three", "loop three", "play track 3", "trigger track 3"],
+              "binding_authority": "project_baseline",
+              "hardware_target": "TRK3 PLAY/STOP1",
+              "message": {
+                "type": "control_change",
+                "channel": 1,
+                "controller": 82,
+                "mode": "momentary",
+                "minimum": 0,
+                "maximum": 127,
+                "trigger_value": 127
+              }
+            },
+            "track_4": {
+              "label": "Track 4 Play/Stop",
+              "aliases": ["track 4", "track4", "trk 4", "trk4", "loop 4", "track four", "loop four", "play track 4", "trigger track 4"],
+              "binding_authority": "project_baseline",
+              "hardware_target": "TRK4 PLAY/STOP1",
+              "message": {
+                "type": "control_change",
+                "channel": 1,
+                "controller": 83,
+                "mode": "momentary",
+                "minimum": 0,
+                "maximum": 127,
+                "trigger_value": 127
+              }
+            },
+            "track_5": {
+              "label": "Track 5 Play/Stop",
+              "aliases": ["track 5", "track5", "trk 5", "trk5", "loop 5", "track five", "loop five", "play track 5", "trigger track 5"],
+              "binding_authority": "project_baseline",
+              "hardware_target": "TRK5 PLAY/STOP1",
+              "message": {
+                "type": "control_change",
+                "channel": 1,
+                "controller": 84,
+                "mode": "momentary",
+                "minimum": 0,
+                "maximum": 127,
+                "trigger_value": 127
+              }
+            },
+            "all_start_stop": {
+              "label": "All Start/Stop",
+              "aliases": ["all tracks", "all loops", "all start", "all stop", "start all tracks", "stop all tracks", "play all tracks", "trigger all tracks", "stop all loops"],
+              "binding_authority": "project_baseline",
+              "hardware_target": "ALL START/STOP1",
+              "message": {
+                "type": "control_change",
+                "channel": 1,
+                "controller": 85,
+                "mode": "momentary",
+                "minimum": 0,
+                "maximum": 127,
+                "trigger_value": 127
+              }
+            }
+          }
+        }
+      }
+    },
+    "roland_rd2000": {
+      "display_name": "Roland RD-2000",
+      "manufacturer": "Roland",
+      "model": "RD-2000",
+      "category": "stage_piano",
+      "enabled": true,
+      "aliases": ["rd-2000", "rd2000", "roland rd-2000", "roland rd2000", "stage piano"],
+      "connection": {
+        "protocol": "midi",
+        "port_hint": "RD-2000",
+        "default_channel": 1
+      },
+      "notes": "The RD-2000 has eight zones. Zone N uses MIDI channel N and CC 7, the MIDI channel-volume controller. Set each zone receive channel on the instrument to match. Received CC 7 addresses the internal zone on that channel.",
+      "control_groups": {
+        "volumes": {
+          "description": "Per-zone channel volume. A general volume request sets every zone. Naming one zone sets only that zone.",
+          "fan_out": true,
+          "aliases": ["volume", "volumes"],
+          "controls": {
+            "zone_1": {
+              "label": "Zone 1 Volume",
+              "aliases": ["zone 1", "zone1", "zone one", "slider 1"],
+              "binding_authority": "midi_specification",
+              "hardware_target": "Zone 1 channel volume",
+              "message": {
+                "type": "control_change",
+                "channel": 1,
+                "controller": 7,
+                "mode": "absolute",
+                "minimum": 0,
+                "maximum": 127
+              }
+            },
+            "zone_2": {
+              "label": "Zone 2 Volume",
+              "aliases": ["zone 2", "zone2", "zone two", "slider 2"],
+              "binding_authority": "midi_specification",
+              "hardware_target": "Zone 2 channel volume",
+              "message": {
+                "type": "control_change",
+                "channel": 2,
+                "controller": 7,
+                "mode": "absolute",
+                "minimum": 0,
+                "maximum": 127
+              }
+            },
+            "zone_3": {
+              "label": "Zone 3 Volume",
+              "aliases": ["zone 3", "zone3", "zone three", "slider 3"],
+              "binding_authority": "midi_specification",
+              "hardware_target": "Zone 3 channel volume",
+              "message": {
+                "type": "control_change",
+                "channel": 3,
+                "controller": 7,
+                "mode": "absolute",
+                "minimum": 0,
+                "maximum": 127
+              }
+            },
+            "zone_4": {
+              "label": "Zone 4 Volume",
+              "aliases": ["zone 4", "zone4", "zone four", "slider 4"],
+              "binding_authority": "midi_specification",
+              "hardware_target": "Zone 4 channel volume",
+              "message": {
+                "type": "control_change",
+                "channel": 4,
+                "controller": 7,
+                "mode": "absolute",
+                "minimum": 0,
+                "maximum": 127
+              }
+            },
+            "zone_5": {
+              "label": "Zone 5 Volume",
+              "aliases": ["zone 5", "zone5", "zone five", "slider 5"],
+              "binding_authority": "midi_specification",
+              "hardware_target": "Zone 5 channel volume",
+              "message": {
+                "type": "control_change",
+                "channel": 5,
+                "controller": 7,
+                "mode": "absolute",
+                "minimum": 0,
+                "maximum": 127
+              }
+            },
+            "zone_6": {
+              "label": "Zone 6 Volume",
+              "aliases": ["zone 6", "zone6", "zone six", "slider 6"],
+              "binding_authority": "midi_specification",
+              "hardware_target": "Zone 6 channel volume",
+              "message": {
+                "type": "control_change",
+                "channel": 6,
+                "controller": 7,
+                "mode": "absolute",
+                "minimum": 0,
+                "maximum": 127
+              }
+            },
+            "zone_7": {
+              "label": "Zone 7 Volume",
+              "aliases": ["zone 7", "zone7", "zone seven", "slider 7"],
+              "binding_authority": "midi_specification",
+              "hardware_target": "Zone 7 channel volume",
+              "message": {
+                "type": "control_change",
+                "channel": 7,
+                "controller": 7,
+                "mode": "absolute",
+                "minimum": 0,
+                "maximum": 127
+              }
+            },
+            "zone_8": {
+              "label": "Zone 8 Volume",
+              "aliases": ["zone 8", "zone8", "zone eight", "slider 8"],
+              "binding_authority": "midi_specification",
+              "hardware_target": "Zone 8 channel volume",
+              "message": {
+                "type": "control_change",
+                "channel": 8,
+                "controller": 7,
+                "mode": "absolute",
+                "minimum": 0,
+                "maximum": 127
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
